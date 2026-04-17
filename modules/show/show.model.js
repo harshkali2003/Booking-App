@@ -14,6 +14,10 @@ const ShowSchema = new mongoose.Schema({
         type : Number,
         required : true,
         min : 1,
+    },
+    bookedSeats : {
+        type : [Number],
+        default : [],
     }
 } , {timestamps : true})
 

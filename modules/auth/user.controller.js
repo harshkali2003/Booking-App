@@ -1,6 +1,8 @@
 const bcrypt = require("bcrypt");
 const User = require("./user.model");
 
+const {GenerateToken} = require("../../shared/middlewares/auth.middleware")
+
 exports.register = async (req, resp, next) => {
   try {
     const { name, email, phone, password } = req.body;
@@ -29,7 +31,12 @@ exports.register = async (req, resp, next) => {
       role: "USER",
     });
 
-    return resp.status(201).json({ success: true, data: newUser });
+    const result = await newUser.toObject();
+    delete result.password;
+
+    const token = GenerateToken(result)
+
+    return resp.status(201).json({ success: true, data: newUser , token : token });
   } catch (err) {
     next(err);
   }
@@ -57,7 +64,12 @@ exports.login = async (req, resp, next) => {
       throw new Error("Incorrect Password");
     }
 
-    return resp.status(201).json({ success: true });
+    const result = await existingUser.toObject();
+    delete result.password;
+
+    const token = GenerateToken(result)
+
+    return resp.status(201).json({ success: true , token : token });
   } catch (err) {
     next(err);
   }
